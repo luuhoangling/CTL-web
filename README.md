@@ -7,3 +7,6 @@
 
 ### Tạo database
   import file database.sql 
+
+### Preview 
+  Truy cập : https://ctl01.infy.uk để xem thêm.
