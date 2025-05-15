@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 -- Insert default admin user (username: admin, password: admin123)
 INSERT INTO users (username, password) VALUES 
-('admin', 'admin123');
+('admin', '1');
 
 -- Insert sample products
 INSERT INTO products (name, description, price, image, category, stock) VALUES
