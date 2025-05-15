@@ -57,42 +57,41 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
 }
 
 // Process form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate name
+if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
     if (empty(trim($_POST["name"]))) {
-        $name_err = "Please enter the product name.";
+        $name_err = "Vui lòng nhập tên sản phẩm.";
     } else {
         $name = trim($_POST["name"]);
     }
     
     // Validate description
     if (empty(trim($_POST["description"]))) {
-        $description_err = "Please enter the product description.";
+        $description_err = "Vui lòng nhập mô tả sản phẩm.";
     } else {
         $description = trim($_POST["description"]);
     }
     
     // Validate price
     if (empty(trim($_POST["price"]))) {
-        $price_err = "Please enter the product price.";
+        $price_err = "Vui lòng nhập giá sản phẩm.";
     } elseif (!is_numeric($_POST["price"]) || $_POST["price"] <= 0) {
-        $price_err = "Please enter a valid positive price.";
+        $price_err = "Vui lòng nhập giá trị hợp lệ lớn hơn 0.";
     } else {
         $price = trim($_POST["price"]);
     }
     
     // Validate category
     if (empty(trim($_POST["category"]))) {
-        $category_err = "Please enter the product category.";
+        $category_err = "Vui lòng nhập danh mục sản phẩm.";
     } else {
         $category = trim($_POST["category"]);
     }
     
     // Validate stock
     if (empty(trim($_POST["stock"]))) {
-        $stock_err = "Please enter the product stock.";
+        $stock_err = "Vui lòng nhập số lượng tồn kho.";
     } elseif (!ctype_digit($_POST["stock"]) || $_POST["stock"] < 0) {
-        $stock_err = "Please enter a valid non-negative stock value.";
+        $stock_err = "Vui lòng nhập số lượng hợp lệ không âm.";
     } else {
         $stock = trim($_POST["stock"]);
     }

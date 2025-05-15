@@ -23,11 +23,11 @@ if (strpos($_SERVER['PHP_SELF'], '/admin/products/') !== false ||
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Shoe Store</title>
+    <title>Quản Trị - Cửa Hàng Giày</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="<?php echo $admin_root; ?>../css/style.css">
@@ -35,28 +35,27 @@ if (strpos($_SERVER['PHP_SELF'], '/admin/products/') !== false ||
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="<?php echo $admin_root; ?>index.php">Shoe Store Admin</a>
+            <a class="navbar-brand" href="<?php echo $admin_root; ?>index.php">Quản Trị Cửa Hàng Giày</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="<?php echo $admin_root; ?>index.php">Dashboard</a>
+                        <a class="nav-link <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="<?php echo $admin_root; ?>index.php">Bảng Điều Khiển</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo (strpos($current_page, 'products') !== false) ? 'active' : ''; ?>" href="<?php echo $admin_root; ?>products/index.php">Products</a>
+                        <a class="nav-link <?php echo (strpos($current_page, 'products') !== false) ? 'active' : ''; ?>" href="<?php echo $admin_root; ?>products/index.php">Sản Phẩm</a>
                     </li>                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo $admin_root; ?>../index.php" target="_blank">View Website</a>
+                        <a class="nav-link" href="<?php echo $admin_root; ?>../index.php" target="_blank">Xem Trang Web</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                    <li class="nav-item dropdown">                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION["admin_username"]); ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="<?php echo $admin_root; ?>auth/logout.php">Logout</a></li>
+                            <li><a class="dropdown-item" href="<?php echo $admin_root; ?>auth/logout.php">Đăng Xuất</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -71,17 +70,17 @@ if (strpos($_SERVER['PHP_SELF'], '/admin/products/') !== false ||
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="<?php echo $admin_root; ?>index.php">
-                                <i class="bi bi-speedometer2"></i> Dashboard
+                                <i class="bi bi-speedometer2"></i> Bảng Điều Khiển
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo (strpos($current_page, 'index.php') !== false && strpos($_SERVER['PHP_SELF'], 'products')) ? 'active' : ''; ?>" href="<?php echo $admin_root; ?>products/index.php">
-                                <i class="bi bi-grid"></i> Products
+                                <i class="bi bi-grid"></i> Sản Phẩm
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo ($current_page == 'create.php') ? 'active' : ''; ?>" href="<?php echo $admin_root; ?>products/create.php">
-                                <i class="bi bi-plus-circle"></i> Add Product
+                                <i class="bi bi-plus-circle"></i> Thêm Sản Phẩm
                             </a>
                         </li>
                     </ul>

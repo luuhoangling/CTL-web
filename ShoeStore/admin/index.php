@@ -30,9 +30,8 @@ while ($row = mysqli_fetch_assoc($recentOrdersResult)) {
 }
 ?>
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
+<div class="container-fluid">    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Bảng Điều Khiển</h1>
     </div>
     
     <div class="row mb-4">
@@ -41,31 +40,30 @@ while ($row = mysqli_fetch_assoc($recentOrdersResult)) {
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="card-title">Total Products</h5>
+                            <h5 class="card-title">Tổng Sản Phẩm</h5>
                             <h2 class="mb-0"><?php echo $totalProducts; ?></h2>
                         </div>
                         <i class="bi bi-box-seam fs-1"></i>
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-0">
-                    <a href="products/index.php" class="text-white text-decoration-none">View Products</a>
+                    <a href="products/index.php" class="text-white text-decoration-none">Xem Sản Phẩm</a>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-4">
+          <div class="col-md-4">
             <div class="card text-white bg-success mb-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="card-title">Total Orders</h5>
+                            <h5 class="card-title">Tổng Đơn Hàng</h5>
                             <h2 class="mb-0"><?php echo $totalOrders; ?></h2>
                         </div>
                         <i class="bi bi-bag-check fs-1"></i>
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-0">
-                    <a href="#" class="text-white text-decoration-none">View Orders</a>
+                    <a href="#" class="text-white text-decoration-none">Xem Đơn Hàng</a>
                 </div>
             </div>
         </div>
@@ -75,24 +73,23 @@ while ($row = mysqli_fetch_assoc($recentOrdersResult)) {
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="card-title">Total Revenue</h5>
+                            <h5 class="card-title">Tổng Doanh Thu</h5>
                             <h2 class="mb-0"><?php echo number_format($totalRevenue, 0, ',', '.') . ' đ'; ?></h2>
                         </div>
                         <i class="bi bi-currency-dollar fs-1"></i>
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-0">
-                    <a href="#" class="text-white text-decoration-none">View Sales</a>
+                    <a href="#" class="text-white text-decoration-none">Xem Doanh Số</a>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="row">
-        <div class="col-md-12">
+    <div class="row">        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">Recent Orders</h5>
+                    <h5 class="mb-0">Đơn Hàng Gần Đây</h5>
                 </div>
                 <div class="card-body">
                     <?php if (count($recentOrders) > 0): ?>
@@ -100,10 +97,10 @@ while ($row = mysqli_fetch_assoc($recentOrdersResult)) {
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Order ID</th>
-                                        <th>Customer</th>
-                                        <th>Amount</th>
-                                        <th>Date</th>
+                                        <th>Mã Đơn</th>
+                                        <th>Khách Hàng</th>
+                                        <th>Tổng Tiền</th>
+                                        <th>Ngày Đặt</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -115,11 +112,10 @@ while ($row = mysqli_fetch_assoc($recentOrdersResult)) {
                                             <td><?php echo date('d/m/Y H:i', strtotime($order['order_date'])); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                                </tbody>                            </table>
                         </div>
                     <?php else: ?>
-                        <p class="mb-0">No orders yet.</p>
+                        <p class="mb-0">Chưa có đơn hàng nào.</p>
                     <?php endif; ?>
                 </div>
             </div>

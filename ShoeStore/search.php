@@ -14,13 +14,12 @@ if (!empty($query)) {
 }
 ?>
 
-<div class="container my-4">
-    <h1 class="mb-4">Search Results for "<?php echo htmlspecialchars($query); ?>"</h1>
+<div class="container my-4">    <h1 class="mb-4">Kết Quả Tìm Kiếm cho "<?php echo htmlspecialchars($query); ?>"</h1>
     
     <form action="search.php" method="GET" class="mb-4">
         <div class="input-group">
-            <input type="text" class="form-control" name="q" value="<?php echo htmlspecialchars($query); ?>" placeholder="Search products...">
-            <button class="btn btn-primary" type="submit">Search</button>
+            <input type="text" class="form-control" name="q" value="<?php echo htmlspecialchars($query); ?>" placeholder="Tìm kiếm sản phẩm...">
+            <button class="btn btn-primary" type="submit">Tìm Kiếm</button>
         </div>
     </form>
     
@@ -34,12 +33,11 @@ if (!empty($query)) {
                         <h5 class="card-title"><?php echo $product['name']; ?></h5>
                         <p class="card-text small text-muted"><?php echo substr($product['description'], 0, 60); ?>...</p>
                         <p class="product-price"><?php echo formatPrice($product['price']); ?></p>
-                        <div class="d-flex justify-content-between">
-                            <a href="product.php?id=<?php echo $product['id']; ?>" class="btn btn-sm btn-outline-primary">View Details</a>
+                        <div class="d-flex justify-content-between">                            <a href="product.php?id=<?php echo $product['id']; ?>" class="btn btn-sm btn-outline-primary">Xem Chi Tiết</a>
                             <form action="cart_actions.php" method="POST">
                                 <input type="hidden" name="action" value="add">
                                 <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-success">Add to Cart</button>
+                                <button type="submit" class="btn btn-sm btn-success">Thêm Vào Giỏ</button>
                             </form>
                         </div>
                     </div>
@@ -48,14 +46,13 @@ if (!empty($query)) {
             <?php endforeach; ?>
         <?php else: ?>
             <div class="col-12">
-                <div class="alert alert-info">
-                    <?php if (empty($query)): ?>
-                        Please enter a search term.
+                <div class="alert alert-info">                    <?php if (empty($query)): ?>
+                        Vui lòng nhập từ khóa tìm kiếm.
                     <?php else: ?>
-                        No products found matching "<?php echo htmlspecialchars($query); ?>".
+                        Không tìm thấy sản phẩm nào phù hợp với "<?php echo htmlspecialchars($query); ?>".
                     <?php endif; ?>
                 </div>
-                <a href="products.php" class="btn btn-primary">Browse All Products</a>
+                <a href="products.php" class="btn btn-primary">Xem Tất Cả Sản Phẩm</a>
             </div>
         <?php endif; ?>
     </div>

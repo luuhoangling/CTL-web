@@ -28,11 +28,10 @@ if (isset($_SESSION['message'])) {
 }
 ?>
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Products Management</h1>
+<div class="container-fluid">    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Quản Lý Sản Phẩm</h1>
         <a href="create.php" class="btn btn-primary">
-            <i class="bi bi-plus"></i> Add New Product
+            <i class="bi bi-plus"></i> Thêm Sản Phẩm Mới
         </a>
     </div>
     
@@ -47,16 +46,15 @@ if (isset($_SESSION['message'])) {
         <div class="card-body">
             <?php if (count($products) > 0): ?>
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
+                    <table class="table table-striped table-hover">                        <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Actions</th>
+                                <th>Hình Ảnh</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Danh Mục</th>
+                                <th>Giá</th>
+                                <th>Tồn Kho</th>
+                                <th>Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,22 +67,20 @@ if (isset($_SESSION['message'])) {
                                     <td><?php echo htmlspecialchars($product['name']); ?></td>
                                     <td><?php echo htmlspecialchars($product['category']); ?></td>
                                     <td><?php echo number_format($product['price'], 0, ',', '.') . ' đ'; ?></td>
-                                    <td><?php echo $product['stock']; ?></td>
-                                    <td>
+                                    <td><?php echo $product['stock']; ?></td>                                    <td>
                                         <a href="edit.php?id=<?php echo $product['id']; ?>" class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-pencil"></i> Edit
+                                            <i class="bi bi-pencil"></i> Sửa
                                         </a>
                                         <a href="delete.php?id=<?php echo $product['id']; ?>" class="btn btn-sm btn-outline-danger delete-product">
-                                            <i class="bi bi-trash"></i> Delete
+                                            <i class="bi bi-trash"></i> Xóa
                                         </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
-                    </table>
-                </div>
+                    </table>                </div>
             <?php else: ?>
-                <p class="mb-0">No products found. <a href="create.php">Add a product</a></p>
+                <p class="mb-0">Không tìm thấy sản phẩm nào. <a href="create.php">Thêm sản phẩm mới</a></p>
             <?php endif; ?>
         </div>
     </div>

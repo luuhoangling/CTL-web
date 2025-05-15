@@ -37,8 +37,8 @@ if (mysqli_num_rows($result) > 0) {
 <div class="container my-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-            <li class="breadcrumb-item"><a href="products.php">Products</a></li>
+            <li class="breadcrumb-item"><a href="index.php">Trang Chủ</a></li>
+            <li class="breadcrumb-item"><a href="products.php">Sản Phẩm</a></li>
             <li class="breadcrumb-item active"><?php echo $product['name']; ?></li>
         </ol>
     </nav>
@@ -48,19 +48,18 @@ if (mysqli_num_rows($result) > 0) {
             <img src="assets/images/<?php echo $product['image']; ?>" class="img-fluid product-detail-image" alt="<?php echo $product['name']; ?>">
         </div>
         
-        <div class="col-md-7">
-            <h1><?php echo $product['name']; ?></h1>
+        <div class="col-md-7">            <h1><?php echo $product['name']; ?></h1>
             <p class="product-price fs-3"><?php echo formatPrice($product['price']); ?></p>
             <div class="badge bg-secondary mb-3"><?php echo $product['category']; ?></div>
             
             <p><?php echo $product['description']; ?></p>
             
             <p>
-                <strong>Availability:</strong> 
+                <strong>Tình trạng:</strong> 
                 <?php if ($product['stock'] > 0): ?>
-                    <span class="text-success">In Stock (<?php echo $product['stock']; ?> available)</span>
+                    <span class="text-success">Còn hàng (<?php echo $product['stock']; ?> sản phẩm)</span>
                 <?php else: ?>
-                    <span class="text-danger">Out of Stock</span>
+                    <span class="text-danger">Hết hàng</span>
                 <?php endif; ?>
             </p>
             
@@ -70,7 +69,7 @@ if (mysqli_num_rows($result) > 0) {
                 
                 <div class="row g-3 align-items-center mb-3">
                     <div class="col-auto">
-                        <label for="quantity" class="form-label">Quantity:</label>
+                        <label for="quantity" class="form-label">Số lượng:</label>
                     </div>
                     <div class="col-auto">
                         <select name="quantity" id="quantity" class="form-select">
@@ -82,7 +81,7 @@ if (mysqli_num_rows($result) > 0) {
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-lg" <?php echo ($product['stock'] <= 0) ? 'disabled' : ''; ?>>
-                    <i class="bi bi-cart-plus"></i> Add to Cart
+                    <i class="bi bi-cart-plus"></i> Thêm Vào Giỏ Hàng
                 </button>
             </form>
         </div>
@@ -90,16 +89,15 @@ if (mysqli_num_rows($result) > 0) {
     
     <?php if (count($relatedProducts) > 0): ?>
     <div class="mt-5">
-        <h3>Related Products</h3>
-        <div class="row">
-            <?php foreach ($relatedProducts as $relatedProduct): ?>
+        <h3>Sản Phẩm Liên Quan</h3>
+        <div class="row">            <?php foreach ($relatedProducts as $relatedProduct): ?>
             <div class="col-md-3 mb-4">
                 <div class="card product-card">
                     <img src="assets/images/<?php echo $relatedProduct['image']; ?>" class="card-img-top product-image" alt="<?php echo $relatedProduct['name']; ?>">
                     <div class="card-body">
                         <h5 class="card-title"><?php echo $relatedProduct['name']; ?></h5>
                         <p class="product-price"><?php echo formatPrice($relatedProduct['price']); ?></p>
-                        <a href="product.php?id=<?php echo $relatedProduct['id']; ?>" class="btn btn-sm btn-outline-primary">View Details</a>
+                        <a href="product.php?id=<?php echo $relatedProduct['id']; ?>" class="btn btn-sm btn-outline-primary">Xem Chi Tiết</a>
                     </div>
                 </div>
             </div>

@@ -1,31 +1,30 @@
-    </main>
-    <footer class="bg-dark text-white py-4 mt-5">
+    </main>    <footer class="bg-dark text-white py-4 mt-5">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <h5>Shoe Store</h5>
-                    <p>Providing quality footwear since 2023</p>
+                    <h5>Cửa Hàng Giày</h5>
+                    <p>Cung cấp giày chất lượng từ năm 2023</p>
                 </div>
                 <div class="col-md-4">
-                    <h5>Quick Links</h5>
+                    <h5>Liên Kết Nhanh</h5>
                     <ul class="list-unstyled">
-                        <li><a href="index.php" class="text-white">Home</a></li>
-                        <li><a href="products.php" class="text-white">Products</a></li>
-                        <li><a href="cart.php" class="text-white">Cart</a></li>
+                        <li><a href="index.php" class="text-white">Trang Chủ</a></li>
+                        <li><a href="products.php" class="text-white">Sản Phẩm</a></li>
+                        <li><a href="cart.php" class="text-white">Giỏ Hàng</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
-                    <h5>Contact</h5>
+                    <h5>Liên Hệ</h5>
                     <address>
-                        123 Shoe Street<br>
-                        Footwear City<br>
+                        123 Đường Giày<br>
+                        Thành Phố Giày<br>
                         Email: contact@shoestore.com<br>
-                        Phone: +123 456 7890
+                        Điện thoại: +123 456 7890
                     </address>
                 </div>
             </div>
             <div class="text-center mt-3">
-                <p>&copy; <?php echo date('Y'); ?> Shoe Store. All rights reserved.</p>
+                <p>&copy; <?php echo date('Y'); ?> Cửa Hàng Giày. Tất cả quyền được bảo lưu.</p>
             </div>
         </div>
     </footer>

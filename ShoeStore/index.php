@@ -14,16 +14,16 @@ $featuredProducts = array_slice($featuredProducts, 0, 4);
     <div class="container">
         <div class="row">
             <div class="col-md-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold">Welcome to Shoe Store</h1>
-                <p class="lead mb-4">Discover our wide range of stylish and comfortable shoes</p>
-                <a href="products.php" class="btn btn-primary btn-lg">Browse All Shoes</a>
+                <h1 class="display-4 fw-bold">Chào Mừng Đến Với Cửa Hàng Giày</h1>
+                <p class="lead mb-4">Khám phá bộ sưu tập giày phong cách và thoải mái của chúng tôi</p>
+                <a href="products.php" class="btn btn-primary btn-lg">Xem Tất Cả Sản Phẩm</a>
             </div>
         </div>
     </div>
 </div>
 
 <div class="container my-5">
-    <h2 class="text-center mb-4">Featured Products</h2>
+    <h2 class="text-center mb-4">Sản Phẩm Nổi Bật</h2>
     <div class="row">
         <?php foreach ($featuredProducts as $product): ?>
         <div class="col-md-3 mb-4">
@@ -41,10 +41,9 @@ $featuredProducts = array_slice($featuredProducts, 0, 4);
                 </div>
             </div>
         </div>
-        <?php endforeach; ?>
-    </div>
+        <?php endforeach; ?>    </div>
     <div class="text-center mt-4">
-        <a href="products.php" class="btn btn-primary">View All Products</a>
+        <a href="products.php" class="btn btn-primary">Xem Tất Cả Sản Phẩm</a>
     </div>
 </div>
 
@@ -54,8 +53,8 @@ $featuredProducts = array_slice($featuredProducts, 0, 4);
             <div class="card text-center p-3">
                 <div class="card-body">
                     <i class="bi bi-truck fs-1 text-primary mb-3"></i>
-                    <h4>Free Shipping</h4>
-                    <p>On orders over 1.000.000đ</p>
+                    <h4>Miễn Phí Vận Chuyển</h4>
+                    <p>Cho đơn hàng trên 1.000.000đ</p>
                 </div>
             </div>
         </div>
@@ -63,8 +62,8 @@ $featuredProducts = array_slice($featuredProducts, 0, 4);
             <div class="card text-center p-3">
                 <div class="card-body">
                     <i class="bi bi-shield-check fs-1 text-primary mb-3"></i>
-                    <h4>Quality Guarantee</h4>
-                    <p>30 days money back guarantee</p>
+                    <h4>Bảo Đảm Chất Lượng</h4>
+                    <p>Đổi trả trong vòng 30 ngày</p>
                 </div>
             </div>
         </div>
@@ -72,8 +71,8 @@ $featuredProducts = array_slice($featuredProducts, 0, 4);
             <div class="card text-center p-3">
                 <div class="card-body">
                     <i class="bi bi-headset fs-1 text-primary mb-3"></i>
-                    <h4>Customer Support</h4>
-                    <p>24/7 dedicated support</p>
+                    <h4>Hỗ Trợ Khách Hàng</h4>
+                    <p>Hỗ trợ 24/7</p>
                 </div>
             </div>
         </div>
