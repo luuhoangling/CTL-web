@@ -16,7 +16,7 @@ $products = getAllProducts($conn);
             <?php foreach ($products as $product): ?>
             <div class="col-md-3 mb-4">
                 <div class="card product-card">
-                    <img src="assets/images/<?php echo $product['image']; ?>" class="card-img-top product-image" alt="<?php echo $product['name']; ?>">
+                    <img src="<?php echo $product['image']; ?>" class="card-img-top product-image" alt="<?php echo $product['name']; ?>" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
                     <div class="card-body">
                         <h5 class="card-title"><?php echo $product['name']; ?></h5>
                         <p class="card-text small text-muted"><?php echo substr($product['description'], 0, 60); ?>...</p>

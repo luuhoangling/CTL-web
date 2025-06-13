@@ -3,7 +3,9 @@
 require_once "../../includes/config.php";
 
 // Check if admin is logged in
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION["admin_logged_in"]) || $_SESSION["admin_logged_in"] !== true) {
     header("location: ../auth/login.php");
     exit;
@@ -35,12 +37,8 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
             $delete_sql = "DELETE FROM products WHERE id = ?";
             if ($delete_stmt = mysqli_prepare($conn, $delete_sql)) {
                 mysqli_stmt_bind_param($delete_stmt, "i", $id);
-                
-                if (mysqli_stmt_execute($delete_stmt)) {
-                    // Delete the product image file if it exists
-                    if (!empty($image) && file_exists("../../assets/images/" . $image)) {
-                        unlink("../../assets/images/" . $image);
-                    }
+                  if (mysqli_stmt_execute($delete_stmt)) {
+                    // No need to delete image file since we're using URLs now
                     
                     $_SESSION['message'] = "Product deleted successfully!";
                     $_SESSION['message_type'] = "success";

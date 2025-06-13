@@ -6,8 +6,8 @@ require_once "../../includes/config.php";
 include "../includes/header.php";
 
 // Initialize variables
-$name = $description = $price = $category = $stock = "";
-$name_err = $description_err = $price_err = $category_err = $stock_err = $image_err = "";
+$name = $description = $price = $category = $stock = $image_url = "";
+$name_err = $description_err = $price_err = $category_err = $stock_err = $image_url_err = "";
 
 // Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
@@ -48,47 +48,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
     } else {
         $stock = trim($_POST["stock"]);
     }
-    
-    // Validate image upload
-    $image = "";
-    if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
-        $allowed = ["jpg" => "image/jpeg", "jpeg" => "image/jpeg", "png" => "image/png", "gif" => "image/gif"];
-        $filename = $_FILES["image"]["name"];
-        $filetype = $_FILES["image"]["type"];
-        $filesize = $_FILES["image"]["size"];
-          // Verify file extension
-        $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        if (!array_key_exists($ext, $allowed)) {
-            $image_err = "Vui lòng chọn định dạng hình ảnh hợp lệ (JPG, PNG, GIF).";
-        }
-        
-        // Verify file size - 5MB maximum
-        $maxsize = 5 * 1024 * 1024;
-        if ($filesize > $maxsize) {
-            $image_err = "Kích thước hình ảnh phải nhỏ hơn 5MB.";
-        }
-        
-        // Verify MIME type
-        if (in_array($filetype, $allowed)) {
-            // Generate unique filename
-            $new_filename = uniqid() . "." . $ext;
-            $upload_path = "../../assets/images/" . $new_filename;
-            
-            if (move_uploaded_file($_FILES["image"]["tmp_name"], $upload_path)) {
-                $image = $new_filename;
-            } else {
-                $image_err = "Lỗi khi tải lên hình ảnh.";
-            }
-        } else {
-            $image_err = "Định dạng tệp không hợp lệ.";
-        }
+      // Validate image URL
+    if (empty(trim($_POST["image_url"]))) {
+        $image_url_err = "Vui lòng nhập đường link hình ảnh.";
+    } elseif (!filter_var($_POST["image_url"], FILTER_VALIDATE_URL)) {
+        $image_url_err = "Vui lòng nhập đường link hợp lệ.";
     } else {
-        $image_err = "Vui lòng chọn hình ảnh cho sản phẩm.";
+        $image_url = trim($_POST["image_url"]);
     }
-    
-    // Check input errors before inserting in database
+      // Check input errors before inserting in database
     if (empty($name_err) && empty($description_err) && empty($price_err) && 
-        empty($category_err) && empty($stock_err) && empty($image_err)) {
+        empty($category_err) && empty($stock_err) && empty($image_url_err)) {
         
         // Prepare an insert statement
         $sql = "INSERT INTO products (name, description, price, image, category, stock) VALUES (?, ?, ?, ?, ?, ?)";
@@ -97,11 +67,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
             // Bind variables to the prepared statement as parameters
             mysqli_stmt_bind_param($stmt, "ssdssi", $param_name, $param_description, $param_price, $param_image, $param_category, $param_stock);
             
-            // Set parameters
-            $param_name = $name;
+            // Set parameters            $param_name = $name;
             $param_description = $description;
             $param_price = $price;
-            $param_image = $image;
+            $param_image = $image_url;
             $param_category = $category;
             $param_stock = $stock;
               // Attempt to execute the prepared statement
@@ -130,9 +99,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
         </a>
     </div>
     
-    <div class="card">
-        <div class="card-body">
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+    <div class="card">        <div class="card-body">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
@@ -166,12 +134,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
                             <textarea name="description" class="form-control <?php echo (!empty($description_err)) ? 'is-invalid' : ''; ?>" rows="5"><?php echo $description; ?></textarea>
                             <div class="invalid-feedback"><?php echo $description_err; ?></div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="image" class="form-label">Hình Ảnh Sản Phẩm *</label>
-                            <input type="file" name="image" class="form-control <?php echo (!empty($image_err)) ? 'is-invalid' : ''; ?>">
-                            <div class="invalid-feedback"><?php echo $image_err; ?></div>
-                            <div class="form-text">Định dạng hỗ trợ: JPG, PNG, GIF. Kích thước tối đa: 5MB.</div>
+                          <div class="mb-3">
+                            <label for="image_url" class="form-label">Đường Link Hình Ảnh *</label>
+                            <input type="url" name="image_url" class="form-control <?php echo (!empty($image_url_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $image_url; ?>" placeholder="https://example.com/image.jpg">
+                            <div class="invalid-feedback"><?php echo $image_url_err; ?></div>
+                            <div class="form-text">Nhập đường link trực tiếp đến hình ảnh sản phẩm.</div>
                         </div>
                     </div>
                 </div>

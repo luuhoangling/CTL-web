@@ -62,7 +62,7 @@ if (isset($_SESSION['message'])) {
                                 <tr>
                                     <td><?php echo $product['id']; ?></td>
                                     <td>
-                                        <img src="../../assets/images/<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="width: 50px; height: 50px; object-fit: contain;">
+                                        <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="width: 50px; height: 50px; object-fit: contain;" onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'">
                                     </td>
                                     <td><?php echo htmlspecialchars($product['name']); ?></td>
                                     <td><?php echo htmlspecialchars($product['category']); ?></td>

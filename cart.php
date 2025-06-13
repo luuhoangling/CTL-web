@@ -2,6 +2,10 @@
 // Shopping Cart Page
 require_once "includes/config.php";
 require_once "includes/functions.php";
+
+// Require login for cart access
+requireLogin();
+
 include "includes/header.php";
 
 // Get cart items
@@ -39,7 +43,7 @@ $cartTotal = getCartTotal();
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <img src="assets/images/<?php echo $item['image']; ?>" alt="<?php echo $item['name']; ?>" class="img-thumbnail me-3" style="width: 80px;">
+                                    <img src="<?php echo $item['image']; ?>" alt="<?php echo $item['name']; ?>" class="img-thumbnail me-3" style="width: 80px;" onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'">
                                     <a href="product.php?id=<?php echo $item['id']; ?>"><?php echo $item['name']; ?></a>
                                 </div>
                             </td>

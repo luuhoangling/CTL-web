@@ -1,7 +1,24 @@
 <?php
 // Check if admin is logged in
-session_start();
-if (!isset($_SESSION["admin_logged_in"]) || $_SESSION["admin_logged_in"] !== true) {
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Kiểm tra session admin hoặc user với isAdmin = 1
+$isAdminLoggedIn = false;
+
+if (isset($_SESSION["admin_logged_in"]) && $_SESSION["admin_logged_in"] === true) {
+    $isAdminLoggedIn = true;
+} elseif (isset($_SESSION['user_id']) && isset($_SESSION['isAdmin']) && $_SESSION['isAdmin'] == 1) {
+    // Nếu đăng nhập bằng user admin, set session admin
+    $_SESSION['admin_logged_in'] = true;
+    $_SESSION['admin_id'] = $_SESSION['user_id'];
+    $_SESSION['admin_username'] = $_SESSION['username'];
+    $_SESSION['admin_full_name'] = $_SESSION['full_name'];
+    $isAdminLoggedIn = true;
+}
+
+if (!$isAdminLoggedIn) {
     // Check if we're in the admin folder or a subfolder
     $path = dirname($_SERVER['PHP_SELF']);
     if (strpos($path, '/admin') !== false && $path != '/admin') {

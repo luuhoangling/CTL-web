@@ -8,6 +8,14 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+// Check if user is logged in for cart actions
+if (!isLoggedIn()) {
+    $_SESSION['redirect_after_login'] = $_SERVER['HTTP_REFERER'] ?? 'products.php';
+    $_SESSION['error_message'] = 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.';
+    header("Location: login.php");
+    exit();
+}
+
 // Get action
 $action = isset($_POST['action']) ? $_POST['action'] : '';
 

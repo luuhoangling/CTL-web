@@ -16,8 +16,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = intval($_GET['id']);
 
 // Initialize variables
-$name = $description = $price = $category = $stock = $current_image = "";
-$name_err = $description_err = $price_err = $category_err = $stock_err = $image_err = "";
+$name = $description = $price = $category = $stock = $current_image = $image_url = "";
+$name_err = $description_err = $price_err = $category_err = $stock_err = $image_url_err = "";
 
 // Fetch product data
 $sql = "SELECT * FROM products WHERE id = ?";
@@ -35,6 +35,7 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
             $category = $product['category'];
             $stock = $product['stock'];
             $current_image = $product['image'];
+            $image_url = $product['image']; // Current image URL
         } else {
             $_SESSION['message'] = "Product not found.";
             $_SESSION['message_type'] = "danger";
@@ -95,50 +96,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
     } else {
         $stock = trim($_POST["stock"]);
     }
-    
-    // Handle image upload
-    $image = $current_image;
-    if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
-        $allowed = ["jpg" => "image/jpeg", "jpeg" => "image/jpeg", "png" => "image/png", "gif" => "image/gif"];
-        $filename = $_FILES["image"]["name"];
-        $filetype = $_FILES["image"]["type"];
-        $filesize = $_FILES["image"]["size"];
-        
-        // Verify file extension
-        $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        if (!array_key_exists($ext, $allowed)) {
-            $image_err = "Please select a valid image format (JPG, PNG, GIF).";
-        }
-        
-        // Verify file size - 5MB maximum
-        $maxsize = 5 * 1024 * 1024;
-        if ($filesize > $maxsize) {
-            $image_err = "Image size must be less than 5MB.";
-        }
-        
-        // Verify MIME type
-        if (in_array($filetype, $allowed)) {
-            // Generate unique filename
-            $new_filename = uniqid() . "." . $ext;
-            $upload_path = "../../assets/images/" . $new_filename;
-            
-            if (move_uploaded_file($_FILES["image"]["tmp_name"], $upload_path)) {
-                // Delete old image if it exists and not the default
-                if (!empty($current_image) && file_exists("../../assets/images/" . $current_image)) {
-                    unlink("../../assets/images/" . $current_image);
-                }
-                $image = $new_filename;
-            } else {
-                $image_err = "Error uploading the image.";
-            }
+      // Validate image URL
+    if (!empty(trim($_POST["image_url"]))) {
+        if (!filter_var($_POST["image_url"], FILTER_VALIDATE_URL)) {
+            $image_url_err = "Vui lòng nhập đường link hợp lệ.";
         } else {
-            $image_err = "Invalid file type.";
+            $image_url = trim($_POST["image_url"]);
+            $image = $image_url; // Use the new URL
         }
+    } else {
+        $image = $current_image; // Keep current image if no new URL provided
     }
-    
-    // Check input errors before updating in database
+      // Check input errors before updating in database
     if (empty($name_err) && empty($description_err) && empty($price_err) && 
-        empty($category_err) && empty($stock_err) && empty($image_err)) {
+        empty($category_err) && empty($stock_err) && empty($image_url_err)) {
         
         // Prepare an update statement
         $sql = "UPDATE products SET name = ?, description = ?, price = ?, image = ?, category = ?, stock = ? WHERE id = ?";
@@ -183,9 +154,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
         </a>
     </div>
     
-    <div class="card">
-        <div class="card-body">
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id=" . $id); ?>" method="post" enctype="multipart/form-data">
+    <div class="card">        <div class="card-body">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id=" . $id); ?>" method="post">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
@@ -219,18 +189,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Validate name
                             <textarea name="description" class="form-control <?php echo (!empty($description_err)) ? 'is-invalid' : ''; ?>" rows="5"><?php echo $description; ?></textarea>
                             <div class="invalid-feedback"><?php echo $description_err; ?></div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="image" class="form-label">Product Image</label>
+                          <div class="mb-3">
+                            <label for="image_url" class="form-label">Đường Link Hình Ảnh</label>
                             <?php if (!empty($current_image)): ?>
                                 <div class="mb-2">
-                                    <img src="../../assets/images/<?php echo $current_image; ?>" alt="Current Image" class="img-thumbnail" style="max-height: 150px;">
-                                    <div><small class="text-muted">Current image</small></div>
+                                    <img src="<?php echo $current_image; ?>" alt="Current Image" class="img-thumbnail" style="max-height: 150px;" onerror="this.src='https://via.placeholder.com/150x150?text=No+Image'">
+                                    <div><small class="text-muted">Hình ảnh hiện tại</small></div>
                                 </div>
                             <?php endif; ?>
-                            <input type="file" name="image" class="form-control <?php echo (!empty($image_err)) ? 'is-invalid' : ''; ?>">
-                            <div class="invalid-feedback"><?php echo $image_err; ?></div>
-                            <div class="form-text">Leave empty to keep current image. Supported formats: JPG, PNG, GIF. Max size: 5MB.</div>
+                            <input type="url" name="image_url" class="form-control <?php echo (!empty($image_url_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $image_url; ?>" placeholder="https://example.com/image.jpg">
+                            <div class="invalid-feedback"><?php echo $image_url_err; ?></div>
+                            <div class="form-text">Để trống để giữ hình ảnh hiện tại. Nhập đường link mới để thay đổi.</div>
                         </div>
                     </div>
                 </div>

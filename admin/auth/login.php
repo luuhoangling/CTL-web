@@ -2,7 +2,9 @@
 error_reporting(error_level: E_ALL);
 ini_set(option: 'display_errors', value: 1);
 // Admin Login
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Check if already logged in
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
@@ -12,6 +14,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 
 // Database connection
 require_once "../../includes/config.php";
+require_once "../../includes/functions.php";
 
 // Initialize variables
 $username = $password = "";
@@ -30,52 +33,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {    // Check if username is empty
         $password_err = "Vui lòng nhập mật khẩu.";
     } else {
         $password = trim($_POST["password"]);
-    }
-
-    // Validate credentials
+    }    // Validate credentials
     if (empty($username_err) && empty($password_err)) {
-        // Prepare a select statement
-        $sql = "SELECT id, username, password FROM users WHERE username = ?";
-
-        if ($stmt = mysqli_prepare($conn, $sql)) {
-            // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
-
-            // Set parameters
-            $param_username = $username;
-
-            // Attempt to execute the prepared statement
-            if (mysqli_stmt_execute($stmt)) {
-                // Store result
-                mysqli_stmt_store_result($stmt);
-
-                // Check if username exists, if yes then verify password
-                if (mysqli_stmt_num_rows($stmt) == 1) {                    // Bind result variables
-                    mysqli_stmt_bind_result($stmt, $id, $username, $db_password);
-                    if (mysqli_stmt_fetch($stmt)) {
-                        if ($password === $db_password) {
-                            // Password is correct, start a new session
-                            session_start();                            // Store data in session variables
-                            $_SESSION["admin_logged_in"] = true;
-                            $_SESSION["admin_id"] = $id;
-                            $_SESSION["admin_username"] = $username;
-
-                            // Redirect user to admin home page
-                            header("location: ../index.php");                        } else {
-                            // Password is not valid
-                            $login_err = "Tên đăng nhập hoặc mật khẩu không hợp lệ.";
-                        }
-                    }
-                } else {
-                    // Username doesn't exist
-                    $login_err = "Tên đăng nhập hoặc mật khẩu không hợp lệ.";
-                }
-            } else {
-                $login_err = "Đã xảy ra lỗi! Vui lòng thử lại sau.";
-            }
-
-            // Close statement
-            mysqli_stmt_close($stmt);
+        // Sử dụng function loginUser từ functions.php
+        require_once "../../includes/functions.php";
+        
+        $loginResult = loginUser($conn, $username, $password);
+        
+        if ($loginResult == 1) { // isAdmin = 1
+            // Set admin session để tương thích với code admin hiện tại
+            $_SESSION['admin_logged_in'] = true;
+            $_SESSION['admin_id'] = $_SESSION['user_id'];
+            $_SESSION['admin_username'] = $_SESSION['username'];
+            $_SESSION['admin_full_name'] = $_SESSION['full_name'];
+            
+            header("location: ../index.php");
+            exit();
+        } else {
+            $login_err = "Tên đăng nhập hoặc mật khẩu không đúng hoặc bạn không có quyền admin.";
         }
     }
 
