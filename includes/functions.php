@@ -200,27 +200,82 @@ function registerUser($conn, $username, $email, $password, $full_name) {
 }
 
 function loginUser($conn, $username, $password) {
-    $username = mysqli_real_escape_string($conn, $username);
-    $password = mysqli_real_escape_string($conn, $password);
-    
-    // Check user credentials (both admin and regular user)
-    $sql = "SELECT id, username, email, password, full_name, isAdmin FROM users WHERE username = '$username' AND password = '$password'";
-    $result = mysqli_query($conn, $sql);
-    
-    if (mysqli_num_rows($result) > 0) {
-        $user = mysqli_fetch_assoc($result);
-        
-        // Set session variables
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['full_name'] = $user['full_name'];
-        $_SESSION['email'] = $user['email'];
-        $_SESSION['isAdmin'] = $user['isAdmin'];
-        
-        return $user['isAdmin']; // Return 1 for admin, 0 for regular user
+    // Input validation
+    if (empty($username) || empty($password)) {
+        return ['success' => false, 'error' => 'Tên đăng nhập và mật khẩu không được để trống.'];
     }
     
-    return false; // Login failed
+    // Sanitize input
+    $username = trim($username);
+    $password = trim($password);
+      // Additional validation
+    if (strlen($username) < 3 || strlen($username) > 50) {
+        return ['success' => false, 'error' => 'Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới (3-50 ký tự)'];
+    }
+    
+    if (strlen($password) < 6) {
+        return ['success' => false, 'error' => 'Mật khẩu phải có ít nhất 6 ký tự.'];
+    }
+    
+    // Check for basic rate limiting (simple implementation)
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $current_time = time();
+    
+    // Initialize login attempts if not exists
+    if (!isset($_SESSION['login_attempts'])) {
+        $_SESSION['login_attempts'] = [];
+    }
+    
+    // Clean old attempts (older than 15 minutes)
+    $_SESSION['login_attempts'] = array_filter($_SESSION['login_attempts'], function($attempt) use ($current_time) {
+        return ($current_time - $attempt) < 900; // 15 minutes
+    });
+    
+    // Check if too many attempts
+    if (count($_SESSION['login_attempts']) >= 5) {
+        return ['success' => false, 'error' => 'Quá nhiều lần đăng nhập sai. Vui lòng thử lại sau 15 phút.'];
+    }
+    
+    // Use prepared statement to prevent SQL injection
+    $sql = "SELECT id, username, email, password, full_name, isAdmin FROM users WHERE username = ? LIMIT 1";
+    $stmt = mysqli_prepare($conn, $sql);
+    
+    if (!$stmt) {
+        return ['success' => false, 'error' => 'Lỗi hệ thống. Vui lòng thử lại sau.'];
+    }
+    
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+      if (mysqli_num_rows($result) > 0) {
+        $user = mysqli_fetch_assoc($result);
+        
+        // Simple password comparison (plain text)
+        if ($password === $user['password']) {
+            // Clear login attempts on successful login
+            $_SESSION['login_attempts'] = [];
+            
+            // Regenerate session ID for security
+            session_regenerate_id(true);
+            
+            // Set session variables
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8');
+            $_SESSION['full_name'] = htmlspecialchars($user['full_name'], ENT_QUOTES, 'UTF-8');
+            $_SESSION['email'] = htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8');
+            $_SESSION['isAdmin'] = (int)$user['isAdmin'];
+            $_SESSION['login_time'] = time();
+            
+            mysqli_stmt_close($stmt);
+            return ['success' => true, 'isAdmin' => (int)$user['isAdmin']];
+        }
+    }
+    
+    // Record failed login attempt
+    $_SESSION['login_attempts'][] = $current_time;
+    
+    mysqli_stmt_close($stmt);
+    return ['success' => false, 'error' => 'Tên đăng nhập hoặc mật khẩu không đúng.'];
 }
 
 
@@ -293,5 +348,38 @@ function loginAdmin($conn, $username, $password) {
 
 function isAdminLoggedIn() {
     return isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
+}
+
+// Security helper functions
+function generateCSRFToken() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function validateCSRFToken($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+function sanitizeInput($input) {
+    return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
+}
+
+function isValidUsername($username) {
+    return preg_match('/^[a-zA-Z0-9_]{3,50}$/', $username);
+}
+
+function isValidPassword($password) {
+    return strlen($password) >= 6 && strlen($password) <= 255;
+}
+
+function logSecurityEvent($event, $details = '') {
+    $timestamp = date('Y-m-d H:i:s');
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+    
+    // In production, you might want to log this to a file or database
+    error_log("Security Event: $event | IP: $ip | Details: $details | Time: $timestamp | User-Agent: $user_agent");
 }
 ?>
