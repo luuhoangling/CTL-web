@@ -1,20 +1,8 @@
 <?php
 // Category and filtering functions for multi-product e-commerce
 
-// Get all categories
-function getAllCategories($conn) {
-    $sql = "SELECT * FROM categories ORDER BY name";
-    $result = mysqli_query($conn, $sql);
-    
-    $categories = [];
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $categories[] = $row;
-        }
-    }
-    
-    return $categories;
-}
+// Ensure base functions are loaded
+require_once __DIR__ . '/functions.php';
 
 // Get products by category
 function getProductsByCategory($conn, $categoryId) {

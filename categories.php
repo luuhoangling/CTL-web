@@ -2,8 +2,6 @@
 // Category page with advanced filtering
 require_once "includes/config.php";
 require_once "includes/functions.php";
-require_once "includes/category_functions.php";
-require_once "includes/category_components.php";
 include "includes/header.php";
 
 // Get category ID from URL
@@ -25,33 +23,49 @@ if ($categoryId) {
     }
 }
 
-// Prepare filters
-$filters = [
-    'category_id' => $categoryId,
-    'search' => isset($_GET['search']) ? $_GET['search'] : '',
-    'min_price' => isset($_GET['min_price']) ? $_GET['min_price'] : '',
-    'max_price' => isset($_GET['max_price']) ? $_GET['max_price'] : '',
-    'attributes' => isset($_GET['attr']) ? $_GET['attr'] : [],
-    'sort' => isset($_GET['sort']) ? $_GET['sort'] : 'newest'
-];
+// Get filters from URL
+$query = isset($_GET['q']) ? trim($_GET['q']) : '';
+$priceMin = isset($_GET['price_min']) ? floatval($_GET['price_min']) : '';
+$priceMax = isset($_GET['price_max']) ? floatval($_GET['price_max']) : '';
+$sort = isset($_GET['sort']) ? $_GET['sort'] : '';
+$attributes = isset($_GET['attributes']) ? $_GET['attributes'] : [];
 
-// Get filtered products
-$products = filterProducts($conn, $filters);
-
-// Get category attributes for filtering
-$categoryAttributes = [];
-if ($categoryId) {
-    $categoryAttributes = getCategoryAttributes($conn, $categoryId);
+// Build filters array
+$filters = [];
+if (!empty($query)) {
+    $filters['search'] = $query;
+}
+if (!empty($categoryId)) {
+    $filters['category_id'] = $categoryId;
+}
+if (!empty($priceMin)) {
+    $filters['price_min'] = $priceMin;
+}
+if (!empty($priceMax)) {
+    $filters['price_max'] = $priceMax;
+}
+if (!empty($sort)) {
+    $filters['sort'] = $sort;
+}
+if (!empty($attributes)) {
+    $filters['attributes'] = $attributes;
 }
 
+// Get products with filters
+$products = getProductsWithFilters($conn, $filters);
+$totalProducts = countProductsWithFilters($conn, $filters);
+
 // Get price range
-$priceRange = getCategoryPriceRange($conn, $categoryId);
+$priceRange = getPriceRange($conn, $categoryId);
+
+// Get attributes for selected category
+$categoryAttributes = [];
+if (!empty($categoryId)) {
+    $categoryAttributes = getAttributesByCategory($conn, $categoryId);
+}
 ?>
 
 <div class="container my-4">
-    <!-- Category Quick Navigation -->
-    <?php renderCategoryNavigation($categories, $categoryId); ?>
-    
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -65,51 +79,111 @@ $priceRange = getCategoryPriceRange($conn, $categoryId);
         </ol>
     </nav>
 
+    <!-- Category Quick Navigation -->
+    <div class="mb-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh Mục Sản Phẩm</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="categories.php" class="btn <?php echo !$categoryId ? 'btn-primary' : 'btn-outline-primary'; ?> btn-sm">
+                                Tất cả
+                            </a>
+                            <?php foreach ($categories as $cat): ?>
+                                <a href="categories.php?category=<?php echo $cat['id']; ?>" 
+                                   class="btn <?php echo ($categoryId == $cat['id']) ? 'btn-primary' : 'btn-outline-primary'; ?> btn-sm">
+                                    <?php echo htmlspecialchars($cat['name']); ?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <!-- Sidebar Filters -->
         <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">Bộ lọc</h5>
+                    <h5 class="mb-0">Bộ Lọc</h5>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="">
+                    <form method="GET" action="categories.php" id="filterForm">
                         <?php if ($categoryId): ?>
                             <input type="hidden" name="category" value="<?php echo $categoryId; ?>">
                         <?php endif; ?>
-                          <!-- Search Filter -->
+                        
+                        <!-- Search Filter -->
                         <div class="mb-3">
-                            <h6>Tìm kiếm</h6>
-                            <input type="text" name="search" class="form-control form-control-sm" 
-                                   placeholder="Nhập từ khóa..." value="<?php echo htmlspecialchars($filters['search']); ?>">
+                            <label class="form-label">Tìm kiếm</label>
+                            <input type="text" name="q" class="form-control" 
+                                   placeholder="Nhập từ khóa..." value="<?php echo htmlspecialchars($query); ?>">
                         </div>
                         
-                        <!-- Category Filter -->
-                        <?php if (!$categoryId): ?>
+                        <!-- Price Range Filter -->
                         <div class="mb-3">
-                            <h6>Danh mục</h6>
-                            <select name="category" class="form-select" onchange="this.form.submit()">
-                                <option value="">Tất cả danh mục</option>
-                                <?php foreach ($categories as $cat): ?>
-                                    <option value="<?php echo $cat['id']; ?>" 
-                                            <?php echo ($categoryId == $cat['id']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($cat['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
+                            <label class="form-label">Khoảng Giá</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" class="form-control form-control-sm" name="price_min" 
+                                           value="<?php echo $priceMin; ?>" placeholder="Từ" 
+                                           min="<?php echo $priceRange['min_price']; ?>" 
+                                           max="<?php echo $priceRange['max_price']; ?>">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control form-control-sm" name="price_max" 
+                                           value="<?php echo $priceMax; ?>" placeholder="Đến"
+                                           min="<?php echo $priceRange['min_price']; ?>" 
+                                           max="<?php echo $priceRange['max_price']; ?>">
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                Từ <?php echo formatPrice($priceRange['min_price']); ?> 
+                                đến <?php echo formatPrice($priceRange['max_price']); ?>
+                            </small>
+                        </div>
+                        
+                        <!-- Attribute Filters -->
+                        <?php if (!empty($categoryAttributes)): ?>
+                            <?php foreach ($categoryAttributes as $attribute): ?>
+                                <div class="mb-3">
+                                    <label class="form-label"><?php echo htmlspecialchars($attribute['name']); ?></label>
+                                    <?php foreach ($attribute['values'] as $value): ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="attributes[<?php echo $attribute['id']; ?>][]" 
+                                                   value="<?php echo $value['id']; ?>"
+                                                   id="attr_<?php echo $value['id']; ?>"
+                                                   <?php echo (isset($attributes[$attribute['id']]) && in_array($value['id'], $attributes[$attribute['id']])) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="attr_<?php echo $value['id']; ?>">
+                                                <?php echo htmlspecialchars($value['value']); ?>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        
+                        <!-- Sort Options -->
+                        <div class="mb-3">
+                            <label for="sort" class="form-label">Sắp Xếp</label>
+                            <select class="form-select" name="sort" id="sort">
+                                <option value="">Mặc định</option>
+                                <option value="price_asc" <?php echo $sort == 'price_asc' ? 'selected' : ''; ?>>Giá tăng dần</option>
+                                <option value="price_desc" <?php echo $sort == 'price_desc' ? 'selected' : ''; ?>>Giá giảm dần</option>
+                                <option value="name_asc" <?php echo $sort == 'name_asc' ? 'selected' : ''; ?>>Tên A-Z</option>
+                                <option value="newest" <?php echo $sort == 'newest' ? 'selected' : ''; ?>>Mới nhất</option>
                             </select>
                         </div>
-                        <?php endif; ?>                        <!-- Price Range Filter -->
-                        <?php renderPriceRangeSlider(
-                            $priceRange['min_price'], 
-                            $priceRange['max_price'], 
-                            $filters['min_price'], 
-                            $filters['max_price']
-                        ); ?>                        <!-- Attribute Filters -->
-                        <?php renderAttributeFilters($categoryAttributes, $filters['attributes']); ?>
 
-                        <button type="submit" class="btn btn-primary btn-sm w-100">Áp dụng bộ lọc</button>
-                        <a href="categories.php<?php echo $categoryId ? '?category='.$categoryId : ''; ?>" 
-                           class="btn btn-outline-secondary btn-sm w-100 mt-2">Xóa bộ lọc</a>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Áp Dụng Lọc</button>
+                            <a href="categories.php<?php echo $categoryId ? '?category='.$categoryId : ''; ?>" 
+                               class="btn btn-outline-secondary">Xóa Bộ Lọc</a>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -118,54 +192,42 @@ $priceRange = getCategoryPriceRange($conn, $categoryId);
         <!-- Products Grid -->
         <div class="col-md-9">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1>
-                    <?php echo $currentCategory ? $currentCategory['name'] : 'Tất cả sản phẩm'; ?>
-                    <small class="text-muted">(<?php echo count($products); ?> sản phẩm)</small>
-                </h1>
-                
-                <!-- Sorting -->
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" 
-                            id="sortDropdown" data-bs-toggle="dropdown">
-                        Sắp xếp
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                        <li><a class="dropdown-item" href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'newest'])); ?>">Mới nhất</a></li>
-                        <li><a class="dropdown-item" href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'price_asc'])); ?>">Giá thấp đến cao</a></li>
-                        <li><a class="dropdown-item" href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'price_desc'])); ?>">Giá cao đến thấp</a></li>
-                        <li><a class="dropdown-item" href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'name'])); ?>">Tên A-Z</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Products Grid -->
+                <h2>
+                    <?php echo $currentCategory ? htmlspecialchars($currentCategory['name']) : 'Tất cả sản phẩm'; ?>
+                    <small class="text-muted">(<?php echo $totalProducts; ?> sản phẩm)</small>
+                </h2>
+            </div>            <!-- Products Grid -->
             <div class="row">
                 <?php if (count($products) > 0): ?>
                     <?php foreach ($products as $product): ?>
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card product-card h-100">
                             <img src="<?php echo $product['image']; ?>" class="card-img-top product-image" 
-                                 alt="<?php echo $product['name']; ?>" 
+                                 alt="<?php echo htmlspecialchars($product['name']); ?>" 
                                  onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
                             <div class="card-body d-flex flex-column">
-                                <div class="mb-2">
-                                    <small class="text-muted"><?php echo $product['category_name']; ?></small>
-                                </div>
-                                <h5 class="card-title"><?php echo $product['name']; ?></h5>
+                                <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
                                 <p class="card-text small text-muted flex-grow-1">
-                                    <?php echo substr($product['description'], 0, 80); ?>...
+                                    <?php echo htmlspecialchars(substr($product['description'], 0, 80)); ?>...
                                 </p>
-                                <div class="mt-auto">
-                                    <p class="product-price mb-2"><?php echo formatPrice($product['price']); ?></p>
-                                    <div class="d-flex justify-content-between">
-                                        <a href="product.php?id=<?php echo $product['id']; ?>" 
-                                           class="btn btn-sm btn-outline-primary">Chi tiết</a>
-                                        <form action="cart_actions.php" method="POST" class="d-inline">
-                                            <input type="hidden" name="action" value="add">
-                                            <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                                            <button type="submit" class="btn btn-sm btn-success">Thêm vào giỏ</button>
-                                        </form>
-                                    </div>
+                                <p class="product-price fw-bold text-primary"><?php echo formatPrice($product['price']); ?></p>
+                                <?php if ($product['stock'] > 0): ?>
+                                    <small class="text-success mb-2">Còn hàng: <?php echo $product['stock']; ?></small>
+                                <?php else: ?>
+                                    <small class="text-danger mb-2">Hết hàng</small>
+                                <?php endif; ?>
+                                <div class="d-flex justify-content-between mt-auto">
+                                    <a href="product.php?id=<?php echo $product['id']; ?>" 
+                                       class="btn btn-sm btn-outline-primary">Xem Chi Tiết</a>
+                                    <?php if ($product['stock'] > 0): ?>
+                                    <form action="cart_actions.php" method="POST" class="d-inline">
+                                        <input type="hidden" name="action" value="add">
+                                        <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-success">Thêm Vào Giỏ</button>
+                                    </form>
+                                    <?php else: ?>
+                                    <button class="btn btn-sm btn-secondary" disabled>Hết hàng</button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -175,8 +237,8 @@ $priceRange = getCategoryPriceRange($conn, $categoryId);
                     <div class="col-12">
                         <div class="alert alert-info text-center">
                             <h4>Không tìm thấy sản phẩm nào</h4>
-                            <p>Hãy thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác.</p>
-                            <a href="categories.php" class="btn btn-primary">Xem tất cả sản phẩm</a>
+                            <p>Không có sản phẩm nào phù hợp với bộ lọc đã chọn.</p>
+                            <a href="categories.php" class="btn btn-primary">Xem Tất Cả Sản Phẩm</a>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -184,5 +246,23 @@ $priceRange = getCategoryPriceRange($conn, $categoryId);
         </div>
     </div>
 </div>
+
+<script>
+// Auto-submit form when sort changes
+document.getElementById('sort').addEventListener('change', function() {
+    document.getElementById('filterForm').submit();
+});
+
+// Auto-submit form when price range changes (with debounce)
+let priceTimeout;
+document.querySelectorAll('input[name="price_min"], input[name="price_max"]').forEach(input => {
+    input.addEventListener('input', function() {
+        clearTimeout(priceTimeout);
+        priceTimeout = setTimeout(() => {
+            document.getElementById('filterForm').submit();
+        }, 1000);
+    });
+});
+</script>
 
 <?php include "includes/footer.php"; ?>

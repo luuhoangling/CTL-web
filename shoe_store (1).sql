@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 13, 2025 at 06:21 PM
+-- Generation Time: Jun 15, 2025 at 09:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -213,14 +213,23 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`id`, `name`, `description`, `price`, `image`, `category`, `stock`, `created_at`, `category_id`) VALUES
 (1, 'Giày thể thao mẫu 1', 'Mẫu giày thể thao chất lượng cao, đệm khí êm ái', 1500000.00, 'https://bizweb.dktcdn.net/thumb/1024x1024/100/449/458/products/anh-ghep-logo-web-3-a78626d5-8b39-4b29-9321-2b26224129a5.png', 'Running', 20, '2025-06-13 09:43:06', 1),
-(2, 'Giày chạy bộ năng động', 'Giày chạy bộ siêu nhẹ, đế bám tốt', 1200000.00, 'https://bizweb.dktcdn.net/thumb/1024x1024/100/449/458/products/anh-ghep-logo-web-3-a78626d5-8b39-4b29-9321-2b26224129a5.png', 'Running', 15, '2025-06-13 09:43:06', 1),
-(3, 'Giày da công sở', 'Giày da cao cấp, sang trọng cho dân văn phòng', 2300000.00, 'https://bizweb.dktcdn.net/thumb/1024x1024/100/449/458/products/anh-ghep-logo-web-3-a78626d5-8b39-4b29-9321-2b26224129a5.png', 'Formal', 10, '2025-06-13 09:43:06', 1),
+(2, 'Giày chạy bộ năng động', 'Giày chạy bộ siêu nhẹ, đế bám tốt', 1200000.00, 'https://product.hstatic.net/1000312752/product/arpv003-3_1_7260e97a734848b596a118464e6c1313.jpg', 'Running', 15, '2025-06-13 09:43:06', 1),
+(3, 'Giày da công sở', 'Giày da cao cấp, sang trọng cho dân văn phòng', 2300000.00, 'https://giaycaosmartmen.com/wp-content/uploads/2025/06/GC2.jpeg', 'Formal', 10, '2025-06-13 09:43:06', 1),
 (4, 'Áo thun mẫu 1', 'Áo thun cotton thoáng mát, phù hợp mọi hoạt động', 300000.00, 'https://www.hpshop1.vn/uploads/Mau%20dong%20phuc%20cong%20ty%20(17).jpg', 'Casual', 50, '2025-06-13 09:43:06', 2),
-(5, 'Áo sơ mi công sở', 'Áo sơ mi trắng lịch sự, phù hợp môi trường làm việc', 450000.00, 'https://www.hpshop1.vn/uploads/Mau%20dong%20phuc%20cong%20ty%20(17).jpg', 'Formal', 30, '2025-06-13 09:43:06', 2),
-(6, 'Áo khoác mùa đông', 'Áo khoác giữ nhiệt, phong cách hiện đại', 850000.00, 'https://www.hpshop1.vn/uploads/Mau%20dong%20phuc%20cong%20ty%20(17).jpg', 'Outerwear', 25, '2025-06-13 09:43:06', 2),
+(5, 'Áo sơ mi công sở', 'Áo sơ mi trắng lịch sự, phù hợp môi trường làm việc', 450000.00, 'https://product.hstatic.net/200000588671/product/ao-so-mi-nam-tay-dai-cong-so-bamboo-mau-xanh-den-1_15a13335f0b74f48a7e2f4d50aed2e01_master.jpg', 'Formal', 30, '2025-06-13 09:43:06', 2),
+(6, 'Áo khoác mùa đông', 'Áo khoác giữ nhiệt, phong cách hiện đại', 850000.00, 'https://product.hstatic.net/200000690725/product/fwcl002_54050573537_o_e651d1526c9b4889821c5b5afa443476_master.jpg', 'Outerwear', 25, '2025-06-13 09:43:06', 2),
 (7, 'Quần jean mẫu 1', 'Quần jean thời trang, co giãn tốt, dễ phối đồ', 500000.00, 'https://product.hstatic.net/200000690725/product/qu_n_web_2f11da571d5e4e40b476755c66a3cb23_master.png', 'Jeans', 30, '2025-06-13 09:43:06', 3),
-(8, 'Quần tây nam', 'Quần tây nam kiểu dáng chuẩn công sở', 600000.00, 'https://product.hstatic.net/200000690725/product/qu_n_web_2f11da571d5e4e40b476755c66a3cb23_master.png', 'Formal', 38, '2025-06-13 09:43:06', 3),
-(9, 'Quần short hè', 'Quần short nhẹ, thoáng mát cho mùa hè', 350000.00, 'https://product.hstatic.net/200000690725/product/qu_n_web_2f11da571d5e4e40b476755c66a3cb23_master.png', 'Casual', 34, '2025-06-13 09:43:06', 3);
+(8, 'Quần tây nam', 'Quần tây nam kiểu dáng chuẩn công sở', 600000.00, 'https://product.hstatic.net/1000360022/product/quan-tay-icondenim-classic-black-form-slim_8e2171d63ffd493fa3794baf50b7dbac_1024x1024.jpg', 'Formal', 38, '2025-06-13 09:43:06', 3),
+(9, 'Quần short hè', 'Quần short nhẹ, thoáng mát cho mùa hè', 350000.00, 'https://product.hstatic.net/1000360022/product/id-2005a_6c93e71ec322499e853ae9533bad3e50_1024x1024.jpg', 'Casual', 34, '2025-06-13 09:43:06', 3),
+(13, 'Giày sneaker trắng basic', 'Thiết kế đơn giản, trẻ trung, phù hợp đi học đi chơi.', 420000.00, 'https://cdn.sablanca.vn/ImageProducts/se0010/wht/se0010_wht_1000x1000_2800007633.jpg', 'Sneaker', 20, '2025-06-15 13:50:24', 1),
+(14, 'Giày chạy bộ nam Xspeed', 'Đệm siêu nhẹ, đế bám tốt, phù hợp chạy bộ và gym.', 580000.00, 'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/163c91e1518646bea1e0a6edc29098d7_9366/DJoi_giay_Adizero_Boston_13_trang_JS4932_02_standard_hover.jpg', 'Running', 18, '2025-06-15 13:50:24', 1),
+(15, 'Giày boot da cổ lửng', 'Phong cách mạnh mẽ, chất liệu giả da cao cấp.', 990000.00, 'https://giayhuyhoang.vn/wp-content/uploads/2020/12/dat-dong-giay-da-nam-thu-cong-chukka-boot-cnes68-005.jpg', 'Boots', 10, '2025-06-15 13:50:24', 1),
+(16, 'Áo polo nam basic', 'Chất liệu cotton thoáng mát, thiết kế đơn giản trẻ trung.', 390000.00, 'https://4menshop.com/images/thumbs/2020/12/ao-polo-tron-basic-po016-mau-hong-15750-slide-products-5fd440be80ab4.jpg', 'Polo', 30, '2025-06-15 13:56:13', 2),
+(17, 'Áo khoác bomber nam', 'Phong cách hiện đại, phù hợp thu đông, vải chống gió.', 750000.00, 'https://product.hstatic.net/1000378223/product/chinhdien_copy_7c89e64288be40eb8bc0f21068c6e15a.jpg', 'Bomber', 20, '2025-06-15 13:56:13', 2),
+(18, 'Áo sơ mi denim nam', 'Chất liệu denim dày dặn, cổ điển và nam tính.', 520000.00, 'https://product.hstatic.net/1000360022/product/id-2205_7d77095bb16643bd87dab04cf0dfac36_master.jpg', 'Denim', 25, '2025-06-15 13:56:13', 2),
+(19, 'Quần short kaki nam', 'Chất liệu kaki mềm nhẹ, thoáng mát, lý tưởng cho mùa hè.', 320000.00, 'https://product.hstatic.net/200000690725/product/fsbk015-6_53853471065_o_165fb1931821413a861ef92333a03604_master.jpg', 'Short', 28, '2025-06-15 13:58:51', 3),
+(20, 'Quần tây nam form slim', 'Thiết kế lịch sự, chất vải co giãn nhẹ, phù hợp đi làm.', 540000.00, 'https://product.hstatic.net/1000253775/product/quan-tay-nam-icondenim-classic-black-form-slim_85094b74406a45e8b5aca0b62579a065_1024x1024.jpg', 'Formal', 22, '2025-06-15 13:58:51', 3),
+(21, 'Quần jogger thể thao nam', 'Thiết kế năng động, phù hợp luyện tập thể thao và mặc hàng ngày.', 460000.00, 'https://file.hstatic.net/1000253775/collection/quan_jooger_308a031f60794d42b5a56454614a2035_master.jpg', 'Sport', 24, '2025-06-15 13:58:51', 3);
 
 -- --------------------------------------------------------
 
@@ -269,8 +278,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `created_at`, `isAdmin`, `email`, `full_name`) VALUES
-(1, 'admin', '1', '2025-06-13 09:43:06', 1, '', 'Administrator'),
-(2, '1', '1', '2025-06-13 09:43:06', 0, 'dm.phuong@hehe.com', 'Đòn Minh Phương');
+(1, 'admin', '123456', '2025-06-13 09:43:06', 1, '', 'Administrator'),
+(2, '1', '1', '2025-06-13 09:43:06', 0, 'dm.phuong@hehe.com', 'Đòn Minh Phương'),
+(4, 'phuong123', 'phuong123', '2025-06-14 17:15:42', 0, 'phuong123@gmail.com', 'Đoàn Minh Phương');
 
 -- --------------------------------------------------------
 
@@ -413,7 +423,7 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `product_variants`
@@ -425,7 +435,7 @@ ALTER TABLE `product_variants`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

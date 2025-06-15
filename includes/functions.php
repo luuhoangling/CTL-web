@@ -32,10 +32,7 @@ function getProductById($conn, $id) {
 // Function to search products
 function searchProducts($conn, $query) {
     $query = mysqli_real_escape_string($conn, $query);
-    $sql = "SELECT * FROM products WHERE 
-            name LIKE '%$query%' OR 
-            description LIKE '%$query%' OR 
-            category LIKE '%$query%'";
+    $sql = "SELECT * FROM products WHERE LOWER(name) COLLATE utf8mb4_bin LIKE LOWER('%$query%')";
     
     $result = mysqli_query($conn, $sql);
     
@@ -381,5 +378,253 @@ function logSecurityEvent($event, $details = '') {
     
     // In production, you might want to log this to a file or database
     error_log("Security Event: $event | IP: $ip | Details: $details | Time: $timestamp | User-Agent: $user_agent");
+}
+
+// Function to get all categories
+function getAllCategories($conn) {
+    $sql = "SELECT * FROM categories ORDER BY name";
+    $result = mysqli_query($conn, $sql);
+    
+    if (!$result) {
+        error_log("MySQL Error in getAllCategories: " . mysqli_error($conn));
+        return [];
+    }
+    
+    $categories = [];
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $categories[] = $row;
+        }
+    }
+    
+    return $categories;
+}
+
+// Function to get attributes by category
+function getAttributesByCategory($conn, $categoryId) {
+    $categoryId = intval($categoryId);
+    $sql = "SELECT a.*, GROUP_CONCAT(av.id, ':', av.value SEPARATOR '|') as values
+            FROM attributes a 
+            LEFT JOIN attribute_values av ON a.id = av.attribute_id 
+            WHERE a.category_id = $categoryId 
+            GROUP BY a.id 
+            ORDER BY a.name";
+    
+    $result = mysqli_query($conn, $sql);
+    
+    if (!$result) {
+        error_log("MySQL Error in getAttributesByCategory: " . mysqli_error($conn));
+        return [];
+    }
+    
+    $attributes = [];
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $values = [];
+            if ($row['values']) {
+                $valuesList = explode('|', $row['values']);
+                foreach ($valuesList as $value) {
+                    $parts = explode(':', $value, 2);
+                    if (count($parts) == 2) {
+                        $values[] = ['id' => $parts[0], 'value' => $parts[1]];
+                    }
+                }
+            }
+            $row['values'] = $values;
+            $attributes[] = $row;
+        }
+    }
+    
+    return $attributes;
+}
+
+// Function to get products with filters
+function getProductsWithFilters($conn, $filters = array()) {
+    $whereClause = "1=1";
+    $joins = "";
+    
+    // Search query filter
+    if (!empty($filters['search'])) {
+        $search = mysqli_real_escape_string($conn, $filters['search']);
+        $whereClause .= " AND (LOWER(p.name) COLLATE utf8mb4_bin LIKE LOWER('%$search%') 
+                         OR LOWER(p.description) COLLATE utf8mb4_bin LIKE LOWER('%$search%'))";
+    }
+    
+    // Category filter
+    if (!empty($filters['category_id'])) {
+        $categoryId = intval($filters['category_id']);
+        $whereClause .= " AND p.category_id = $categoryId";
+    }
+    
+    // Price range filter
+    if (!empty($filters['price_min'])) {
+        $priceMin = floatval($filters['price_min']);
+        $whereClause .= " AND p.price >= $priceMin";
+    }
+    
+    if (!empty($filters['price_max'])) {
+        $priceMax = floatval($filters['price_max']);
+        $whereClause .= " AND p.price <= $priceMax";
+    }
+    
+    // Attribute filters
+    if (!empty($filters['attributes']) && is_array($filters['attributes'])) {
+        $attributeConditions = [];
+        $joinCounter = 0;
+        
+        foreach ($filters['attributes'] as $attributeId => $valueIds) {
+            if (!empty($valueIds) && is_array($valueIds)) {
+                $joinCounter++;
+                $joins .= " INNER JOIN product_variants pv$joinCounter ON p.id = pv$joinCounter.product_id";
+                $joins .= " INNER JOIN variant_attribute_values vav$joinCounter ON pv$joinCounter.id = vav$joinCounter.variant_id";
+                
+                $valueIdsStr = implode(',', array_map('intval', $valueIds));
+                $attributeConditions[] = "vav$joinCounter.attribute_value_id IN ($valueIdsStr)";
+            }
+        }
+        
+        if (!empty($attributeConditions)) {
+            $whereClause .= " AND " . implode(' AND ', $attributeConditions);
+        }
+    }
+    
+    // Sort options
+    $orderBy = "p.id DESC";
+    if (!empty($filters['sort'])) {
+        switch ($filters['sort']) {
+            case 'price_asc':
+                $orderBy = "p.price ASC";
+                break;
+            case 'price_desc':
+                $orderBy = "p.price DESC";
+                break;
+            case 'name_asc':
+                $orderBy = "p.name ASC";
+                break;
+            case 'newest':
+                $orderBy = "p.created_at DESC";
+                break;
+            default:
+                $orderBy = "p.id DESC";
+        }
+    }
+    
+    $sql = "SELECT DISTINCT p.* FROM products p $joins WHERE $whereClause ORDER BY $orderBy";
+    
+    // Debug: Log the SQL query
+    error_log("SQL Query: " . $sql);
+    
+    $result = mysqli_query($conn, $sql);
+    
+    if (!$result) {
+        error_log("MySQL Error: " . mysqli_error($conn));
+        throw new Exception("Database query failed: " . mysqli_error($conn));
+    }
+    
+    $products = [];
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $products[] = $row;
+        }
+    }
+    
+    return $products;
+}
+
+// Function to get price range for products
+function getPriceRange($conn, $categoryId = null) {
+    $whereClause = "1=1";
+    if ($categoryId) {
+        $categoryId = intval($categoryId);
+        $whereClause .= " AND category_id = $categoryId";
+    }
+    
+    $sql = "SELECT MIN(price) as min_price, MAX(price) as max_price FROM products WHERE $whereClause";
+    $result = mysqli_query($conn, $sql);
+    
+    if (!$result) {
+        error_log("MySQL Error in getPriceRange: " . mysqli_error($conn));
+        return ['min_price' => 0, 'max_price' => 0];
+    }
+    
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        return [
+            'min_price' => $row['min_price'] ?? 0,
+            'max_price' => $row['max_price'] ?? 0
+        ];
+    }
+    
+    return ['min_price' => 0, 'max_price' => 0];
+}
+
+// Function to count products with filters
+function countProductsWithFilters($conn, $filters = array()) {
+    $whereClause = "1=1";
+    $joins = "";
+    
+    // Search query filter
+    if (!empty($filters['search'])) {
+        $search = mysqli_real_escape_string($conn, $filters['search']);
+        $whereClause .= " AND (LOWER(p.name) COLLATE utf8mb4_bin LIKE LOWER('%$search%') 
+                         OR LOWER(p.description) COLLATE utf8mb4_bin LIKE LOWER('%$search%'))";
+    }
+    
+    // Category filter
+    if (!empty($filters['category_id'])) {
+        $categoryId = intval($filters['category_id']);
+        $whereClause .= " AND p.category_id = $categoryId";
+    }
+    
+    // Price range filter
+    if (!empty($filters['price_min'])) {
+        $priceMin = floatval($filters['price_min']);
+        $whereClause .= " AND p.price >= $priceMin";
+    }
+    
+    if (!empty($filters['price_max'])) {
+        $priceMax = floatval($filters['price_max']);
+        $whereClause .= " AND p.price <= $priceMax";
+    }
+    
+    // Attribute filters
+    if (!empty($filters['attributes']) && is_array($filters['attributes'])) {
+        $attributeConditions = [];
+        $joinCounter = 0;
+        
+        foreach ($filters['attributes'] as $attributeId => $valueIds) {
+            if (!empty($valueIds) && is_array($valueIds)) {
+                $joinCounter++;
+                $joins .= " INNER JOIN product_variants pv$joinCounter ON p.id = pv$joinCounter.product_id";
+                $joins .= " INNER JOIN variant_attribute_values vav$joinCounter ON pv$joinCounter.id = vav$joinCounter.variant_id";
+                
+                $valueIdsStr = implode(',', array_map('intval', $valueIds));
+                $attributeConditions[] = "vav$joinCounter.attribute_value_id IN ($valueIdsStr)";
+            }
+        }
+        
+        if (!empty($attributeConditions)) {
+            $whereClause .= " AND " . implode(' AND ', $attributeConditions);
+        }
+    }
+    
+    $sql = "SELECT COUNT(DISTINCT p.id) as total FROM products p $joins WHERE $whereClause";
+    
+    // Debug: Log the SQL query
+    error_log("Count SQL Query: " . $sql);
+    
+    $result = mysqli_query($conn, $sql);
+    
+    if (!$result) {
+        error_log("MySQL Count Error: " . mysqli_error($conn));
+        throw new Exception("Database count query failed: " . mysqli_error($conn));
+    }
+    
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        return intval($row['total']);
+    }
+    
+    return 0;
 }
 ?>
