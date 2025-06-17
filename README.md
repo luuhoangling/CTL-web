@@ -1,12 +1,11 @@
 ### Cách build web
 
 1. Clone hoặc tải file zip
-2. Copy thư mục ShoeStore vào thư mục Xampp/htdocs/
-3. Mở 127.0.0.1/ShoeStore/admin/auth/login.php để truy cập quyền admin 
-4. Mở 127.0.0.1/ShoeStore/index.php để truy cập quyền user 
+2. Copy thư mục vừa clone vào thư mục Xampp/htdocs/
+3. Mở 127.0.0.1/ShoeStore/admin/auth/login.php để truy cập quyền admin hoặc đăng nhập bằng tài khoản admin
 
 ### Tạo database
-  import file database.sql 
+  import file shoe_store.sql 
 
 ### Preview 
   Truy cập : https://ctl01.infy.uk để xem thêm.

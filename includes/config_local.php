@@ -1,9 +1,14 @@
 <?php
+// Start session
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Database connection configuration
-define('DB_SERVER', 'sql301.infinityfree.com');
-define('DB_USERNAME', 'if0_38993091');
-define('DB_PASSWORD', 'QAAZcHm832nn');
-define('DB_NAME', 'if0_38993091_shoe_store');
+define('DB_SERVER', 'localhost');
+define('DB_USERNAME', 'root');
+define('DB_PASSWORD', '');
+define('DB_NAME', 'shoe_store');
 
 // Attempt to connect to MySQL database
 $conn = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
