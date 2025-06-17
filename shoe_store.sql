@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 15, 2025 at 09:05 AM
+-- Generation Time: Jun 17, 2025 at 07:48 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -279,8 +279,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `password`, `created_at`, `isAdmin`, `email`, `full_name`) VALUES
 (1, 'admin', '123456', '2025-06-13 09:43:06', 1, '', 'Administrator'),
-(2, '1', '1', '2025-06-13 09:43:06', 0, 'dm.phuong@hehe.com', 'Đòn Minh Phương'),
-(4, 'phuong123', 'phuong123', '2025-06-14 17:15:42', 0, 'phuong123@gmail.com', 'Đoàn Minh Phương');
+(2, '1', '1', '2025-06-13 09:43:06', 0, 'dm.phuong@hehe.con', 'Đòn Minh Phương'),
+(4, 'phuong123', 'phuong123', '2025-06-14 17:15:42', 0, 'dm.phuong@hehe.com', 'Đoàn Minh Phơng');
 
 -- --------------------------------------------------------
 
