@@ -1,0 +1,66 @@
+# Production .htaccess - Copy this to your production server
+# Enable URL rewriting
+RewriteEngine On
+
+# Hide PHP errors on production
+php_flag display_errors off
+php_value error_reporting 0
+
+# Add trailing slash to directories
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.*[^/])$ $1/ [L,R=301]
+
+# Custom error pages
+ErrorDocument 404 /404.php
+ErrorDocument 403 /403.php
+
+# Protect configuration files
+<FilesMatch "^\.ht">
+  Order allow,deny
+  Deny from all
+  Satisfy All
+</FilesMatch>
+
+# Protect sensitive files
+<FilesMatch "\.(sql|log|ini|md)$">
+  Order allow,deny
+  Deny from all
+  Satisfy All
+</FilesMatch>
+
+# Protect debug files on production
+<Files "debug.php">
+  Order allow,deny
+  Deny from all
+  Satisfy All
+</Files>
+
+# Don't show directory listings
+Options -Indexes
+
+# Follow symbolic links
+Options +FollowSymLinks
+
+# Set the default handler
+DirectoryIndex index.php index.html
+
+# PHP settings for production
+php_value upload_max_filesize 5M
+php_value post_max_size 8M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# Session security settings for production
+php_value session.cookie_httponly 1
+php_value session.use_only_cookies 1
+php_value session.cookie_secure 1
+php_value session.use_trans_sid 0
+php_value session.cookie_samesite Lax
+
+# Additional security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+</IfModule>

@@ -1,6 +1,7 @@
 <?php
-// Start the session if not already started
-if (session_status() == PHP_SESSION_NONE) {
+// Session is already started in config files, so we don't need to start it again
+// Just ensure the session is active
+if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();
 }
 

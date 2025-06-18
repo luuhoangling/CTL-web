@@ -349,14 +349,40 @@ function isAdminLoggedIn() {
 
 // Security helper functions
 function generateCSRFToken() {
-    if (empty($_SESSION['csrf_token'])) {
+    // Ensure session is active
+    if (session_status() != PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    
+    // Generate new token if not exists or expired
+    if (empty($_SESSION['csrf_token']) || 
+        (isset($_SESSION['csrf_token_time']) && (time() - $_SESSION['csrf_token_time']) > 3600)) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        $_SESSION['csrf_token_time'] = time();
     }
     return $_SESSION['csrf_token'];
 }
 
 function validateCSRFToken($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+    // Ensure session is active
+    if (session_status() != PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    
+    // Check if token exists and is not expired (1 hour)
+    if (!isset($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time'])) {
+        return false;
+    }
+    
+    // Check if token is expired (1 hour)
+    if ((time() - $_SESSION['csrf_token_time']) > 3600) {
+        unset($_SESSION['csrf_token']);
+        unset($_SESSION['csrf_token_time']);
+        return false;
+    }
+    
+    // Use hash_equals to prevent timing attacks
+    return hash_equals($_SESSION['csrf_token'], $token);
 }
 
 function sanitizeInput($input) {

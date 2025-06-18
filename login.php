@@ -15,6 +15,13 @@ $success = "";
 $csrf_token = generateCSRFToken();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Debug information
+    error_log("CSRF Debug - Session ID: " . session_id());
+    error_log("CSRF Debug - Session token exists: " . (isset($_SESSION['csrf_token']) ? 'Yes' : 'No'));
+    error_log("CSRF Debug - POST token exists: " . (isset($_POST['csrf_token']) ? 'Yes' : 'No'));
+    error_log("CSRF Debug - Session token: " . (isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : 'NULL'));
+    error_log("CSRF Debug - POST token: " . (isset($_POST['csrf_token']) ? $_POST['csrf_token'] : 'NULL'));
+    
     // Validate CSRF token
     if (!isset($_POST['csrf_token']) || !validateCSRFToken($_POST['csrf_token'])) {
         $error = "Token bảo mật không hợp lệ. Vui lòng thử lại.";
