@@ -429,7 +429,7 @@ function getAllCategories($conn) {
 // Function to get attributes by category
 function getAttributesByCategory($conn, $categoryId) {
     $categoryId = intval($categoryId);
-    $sql = "SELECT a.*, GROUP_CONCAT(av.id, ':', av.value SEPARATOR '|') as values
+    $sql = "SELECT a.*, GROUP_CONCAT(av.id, ':', av.value SEPARATOR '|') as `values`
             FROM attributes a 
             LEFT JOIN attribute_values av ON a.id = av.attribute_id 
             WHERE a.category_id = $categoryId 
